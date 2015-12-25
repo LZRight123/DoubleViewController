@@ -109,6 +109,7 @@ static const CGFloat kLinePaddingForTop = 8.0f;
         [button setTitleColor:self.tabItemNormalColor forState:UIControlStateNormal];
         [button setTitleColor:self.tabItemSelectedColor forState:UIControlStateSelected];
         [button setBackgroundImage:self.tabItemNormalBackgroundImage forState:UIControlStateNormal];
+//        button.backgroundColor = [UIColor redColor];
         [button setBackgroundImage:self.tabItemSelectedBackgroundImage forState:UIControlStateSelected];
         [button addTarget:self action:@selector(selectNameButton:) forControlEvents:UIControlEventTouchUpInside];
         [self.topScrollView addSubview:button];
@@ -121,16 +122,30 @@ static const CGFloat kLinePaddingForTop = 8.0f;
             [self.lines addObject:line];
             [self.topScrollView addSubview:line];
         }
-       
-        
-        
         
         if (idx == 0) {
-            self.shadowImageView.frame = CGRectMake(kWidthOfButtonMargin, kHeightOfTopScrollView -kShadowImageViewHeight, textWidth,kShadowImageViewHeight);
+            self.shadowImageView.frame = CGRectMake(CGRectGetMinX(button.frame), kHeightOfTopScrollView -kShadowImageViewHeight,CGRectGetWidth(button.frame),kShadowImageViewHeight);
             button.selected = YES;
             self.selectedBtnTag = button.tag;
         }
     }];
+    if(self.topScrollView.contentSize.width < self.topScrollView.bounds.size.width){
+        self.topScrollView.contentSize = CGSizeMake( self.topScrollView.bounds.size.width, kHeightOfTopScrollView);
+        
+        CGFloat padding = 5;
+        CGFloat width = self.topScrollView.bounds.size.width /self.btns.count;
+        [self.btns enumerateObjectsUsingBlock:^(UIButton *button, NSUInteger idx, BOOL * stop) {
+            CGFloat x = padding + idx*width;
+            button.frame = CGRectMake(x,0,width, kHeightOfTopScrollView);
+            
+            if (idx == 0) {
+                self.shadowImageView.frame = CGRectMake(CGRectGetMinX(button.frame), kHeightOfTopScrollView -kShadowImageViewHeight,CGRectGetWidth(button.frame),kShadowImageViewHeight);
+                button.selected = YES;
+                self.selectedBtnTag = button.tag;
+            }
+        }];
+      
+    }
     //设置顶部滚动视图的内容总尺寸
     self.topScrollView.contentSize = CGSizeMake(topScrollViewContentWidth, kHeightOfTopScrollView);
     // 如果滚动视图的内容尺寸没有自身视图的话
@@ -158,9 +173,8 @@ static const CGFloat kLinePaddingForTop = 8.0f;
     if (!sender.selected) {
         sender.selected = YES;
         [UIView animateWithDuration:0.1 animations:^{
-            
-            self.shadowImageView.center = CGPointMake(sender.center.x, kHeightOfTopScrollView - kShadowImageViewHeight);
-            
+//            CGFloat textWidth = [sender.currentTitle boundingRectWithSize:CGSizeMake(MAXFLOAT, kHeightOfTopScrollView) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName:[UIFont systemFontOfSize:kFontSizeOfTabButton]} context:nil].size.width;
+            self.shadowImageView.frame = CGRectMake(CGRectGetMinX(sender.frame), kHeightOfTopScrollView -kShadowImageViewHeight,CGRectGetWidth(sender.frame),kShadowImageViewHeight);
         } completion:^(BOOL finished) {
             if (finished) {
                 //设置新页出现
@@ -332,18 +346,11 @@ static const CGFloat kLinePaddingForTop = 8.0f;
             [self.btns enumerateObjectsUsingBlock:^(UIButton *obj, NSUInteger idx, BOOL * stop) {
                 CGFloat x = padding + idx*width;
                 obj.frame = CGRectMake(x,0,width, kHeightOfTopScrollView);
-//                obj.center = CGPointMake(frame.origin.x+frame.size.width*0.5, kHeightOfTopScrollView*0.5);
-                
+
                 //分割线
                 if (self.isNeedLine && idx < self.btns.count-1) {
                     UIView *line = self.lines[idx];
                     line.frame = CGRectMake(CGRectGetMaxX(obj.frame), kLinePaddingForTop, 0.5,kHeightOfTopScrollView-2*kLinePaddingForTop);
-                }
-              
-                
-                if (idx == 0) {
-                    self.shadowImageView.center = CGPointMake(obj.center.x, kHeightOfTopScrollView - kShadowImageViewHeight);
-                    obj.selected = YES;
                 }
             }];
         }
