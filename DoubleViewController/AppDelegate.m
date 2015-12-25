@@ -16,6 +16,7 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    NSLog(@"梁泽第一次改");
     // Override point for customization after application launch.
     
     NSLog(@"严明俊提交");
